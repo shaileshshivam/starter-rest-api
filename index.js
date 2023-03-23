@@ -21,7 +21,25 @@ app.use(express.urlencoded({ extended: true }))
 
 
 app.post("/alchemy-address-activity-webhook", (req, res) => {
-  console.log(req.body)
+
+  const { event, id, webhookId, createdAt, type } = req.body || { }
+  const { network, activity } = event
+
+  console.log({
+    id,
+    webhookId,
+    createdAt,
+    type,
+    network,
+    activity
+  });
+
+  for(const item of activity) {
+    console.log(item)
+  }
+
+  console.log("-".repeat(100))
+
   return res.sendStatus(200);
 })
 
