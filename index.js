@@ -19,6 +19,12 @@ app.use(express.urlencoded({ extended: true }))
 // app.use(express.static('public', options))
 // #############################################################################
 
+
+app.post("/alchemy-address-activity-webhook", (req, res) => {
+  console.log(req.body)
+  return res.sendStatus(200);
+})
+
 // Create or Update an item
 app.post('/:col/:key', async (req, res) => {
   console.log(req.body)
