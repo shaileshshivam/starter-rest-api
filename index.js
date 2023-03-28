@@ -1,8 +1,13 @@
 const express = require('express')
 const app = express()
 const db = require('@cyclic.sh/dynamodb')
+const crypto = require("crypto")
 
-app.use(express.json())
+app.use(express.json({
+  verify: (req, res, buf, encoding) => {
+    req.rawBody = buf.toString(encoding || "utf-8")
+  }
+}))
 app.use(express.urlencoded({ extended: true }))
 
 // #############################################################################
@@ -20,7 +25,22 @@ app.use(express.urlencoded({ extended: true }))
 // #############################################################################
 
 
+function validateAlchemyRequest(req) {
+  const rawBody = req.rawBody
+  const alchemySignature = req.headers["x-alchemy-signature"]
+  const signingKey = "whsec_ttNB9rUkYVggM7Zxn7W8O2El"
+
+  const hmac = crypto.createHmac("sha256", signingKey);
+  hmac.update(rawBody, "utf8");
+  const digest = hmac.digest("hex");
+  return alchemySignature === digest;
+
+}
+
+
 app.post("/alchemy-address-activity-webhook", (req, res) => {
+
+  const isValidRequest = validateAlchemyRequest(req)
 
   const { event, id, webhookId, createdAt, type } = req.body || { }
   const { network, activity } = event
@@ -31,7 +51,8 @@ app.post("/alchemy-address-activity-webhook", (req, res) => {
     createdAt,
     type,
     network,
-    activity
+    activity,
+    isValidRequest
   });
 
   for(const item of activity) {
