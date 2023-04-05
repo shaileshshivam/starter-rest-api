@@ -28,17 +28,18 @@ app.use(express.urlencoded({ extended: true }))
 function validateAlchemyRequest(req) {
   const rawBody = req.rawBody
   const alchemySignature = req.headers["x-alchemy-signature"]
-  const signingKey = "whsec_ttNB9rUkYVggM7Zxn7W8O2El"
+  const signingKey = "whsec_ztQrRQ2SphDEjJbwe5oTuHw4"
+  const digest = crypto.createHmac("sha256", signingKey).update(rawBody, "utf8").digest("hex");
 
-  const hmac = crypto.createHmac("sha256", signingKey);
-  hmac.update(rawBody, "utf8");
-  const digest = hmac.digest("hex");
   return alchemySignature === digest;
-
 }
 
 
 app.post("/alchemy-address-activity-webhook", (req, res) => {
+
+  console.log({
+    rawBody: req.rawBody
+  })
 
   const isValidRequest = validateAlchemyRequest(req)
 
@@ -51,7 +52,6 @@ app.post("/alchemy-address-activity-webhook", (req, res) => {
     createdAt,
     type,
     network,
-    activity,
     isValidRequest
   });
 
