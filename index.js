@@ -35,6 +35,19 @@ function validateAlchemyRequest(req) {
 }
 
 
+app.get("/api/trustloop/consent/:companyId", (req, res) => {
+  const companyId = req.params.companyId
+  console.log(req.query)
+
+  console.log({
+    status: req.query.status,
+    consentID: req.query.status,
+  })
+
+  res.json({}).end();
+})
+
+
 app.post("/alchemy-address-activity-webhook", (req, res) => {
 
   console.log({
